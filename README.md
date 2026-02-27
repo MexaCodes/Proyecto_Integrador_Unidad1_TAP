@@ -320,6 +320,194 @@ page.add(
 # Punto de entrada para ejecución en entorno web
 if __name__ == "__main__":
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+```
+#RESULTADOS
+<img width="1572" height="882" alt="Screenshot 2026-02-26 190951" src="https://github.com/user-attachments/assets/50e138db-8967-48ef-a650-d5c4df90384d" />
+<img width="1574" height="880" alt="Screenshot 2026-02-26 191106" src="https://github.com/user-attachments/assets/958d0e37-7016-4f61-92d3-a10f2bf450ab" />
+
+#ERRORES
+<img width="1575" height="877" alt="Screenshot 2026-02-26 191042" src="https://github.com/user-attachments/assets/5ab5af00-9fff-451b-a695-9bb64d6fad4e" />
+<img width="1586" height="889" alt="Screenshot 2026-02-26 191010" src="https://github.com/user-attachments/assets/b0642368-6127-4ec7-8801-ccb0c3674d0d" />
+<img width="1566" height="883" alt="Screenshot 2026-02-26 191127" src="https://github.com/user-attachments/assets/a832a51b-7a97-4fc5-974e-b23b54fa197d" />
+<img width="1579" height="875" alt="Screenshot 2026-02-26 191232" src="https://github.com/user-attachments/assets/dbb5bc55-eb2b-4391-ab0f-f88a3e59bf7d" />
+<img width="1559" height="877" alt="Screenshot 2026-02-26 191210" src="https://github.com/user-attachments/assets/d97b9923-5d8d-470d-b03d-29b8bb0a1c68" />
+<img width="1572" height="885" alt="Screenshot 2026-02-26 191149" src="https://github.com/user-attachments/assets/3a4684e7-59e5-497b-bb49-72da7949d3bf" />
+<img width="1569" height="869" alt="Screenshot 2026-02-26 191251" src="https://github.com/user-attachments/assets/b0f7be6f-57d6-4fb9-b613-33f4aa98ffd0" />
+
+
+#CODIGO COMPLETO
+```python
+import re
+import flet as ft
+
+def main(page: ft.Page):
+    # Configuración de página para entorno Web/Pyodide
+    page.title = "Registro de Estudiantes - Tópicos Avanzados"
+    page.bgcolor = "#FDFBE3"  # Fondo crema de la imagen
+    page.padding = 30
+    page.theme_mode = ft.ThemeMode.LIGHT
+
+    # Contenedor para Genero (Se integrará Radio posteriormente)
+    # Por ahora mantenemos la estructura visual con Texto
+    row_genero = ft.RadioGroup(
+        content=ft.Row(
+            controls=[
+                ft.Radio(value ="masculino", label="Masculino"),
+                ft.Radio(value ="femenino", label="Femenino"),
+                ft.Radio(value ="otro", label="Otro"),
+            ])
+    )
+
+    def cerrar_dialogo(e):
+        welcome_dlg.open = False 
+        page.update()
+
+    def cerrar_error(e):
+        dlg_error.open = False 
+        page.update()
+         
+    welcome_dlg = ft.AlertDialog(
+        open=False,
+        modal=True,
+        title=ft.Text("Welcome!"),
+        content=ft.Column([], width=300, height=70, tight=True),
+        actions=[ft.TextButton("Ok", on_click=cerrar_dialogo)],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
+    dlg_error = ft.AlertDialog(
+        title=ft.Text(""),
+        content=ft.Text(""),
+        actions=[ft.TextButton("Entendido", on_click=cerrar_error)]
+    )
+
+    page.overlay.append(dlg_error)
+    page.overlay.append(welcome_dlg)
+
+    def registrar_datos(e):
+        nonlocal row_genero
+        # Validamos que no estén vacíos
+        # Creamos una lista de tuplas: (Control, Nombre del campo para el mensaje)
+        validaciones = [
+            (txt_nombre, "el Nombre Completo"),
+            (txt_control, "el Número de Control"),
+            (txt_email, "el Correo Electrónico"),
+            (dd_carrera, "la Carrera"),
+            (dd_semestre, "el Semestre"),
+            (row_genero, "el Género")
+        ]
+        # Revisamos uno por uno
+        for control, nombre_error in validaciones:
+            dlg_error.title=ft.Text("⚠️ Campo Requerido")
+            if not control.value:
+                # Personalizamos el mensaje del diálogo
+                dlg_error.content.value = f"Por favor, ingresa {nombre_error} para continuar."
+                dlg_error.open = True
+                page.update()
+                return
+        else:
+            patron_correo = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(patron_correo, txt_email.value):
+                dlg_error.title = ft.Text("❌ Correo Inválido")
+                dlg_error.content.value = "El formato del correo no es correcto. Ejemplo: usuario@dominio.com"
+                dlg_error.open = True
+                page.update()
+                return # <--- Si el correo está mal, nos salimos y no registramos
+            # ----------------------------  
+            resultado = (
+                f"👤 ALUMNO REGISTRADO:\n"
+                f"N.Control: {txt_control.value}\n"
+                f"Nombre: {txt_nombre.value}\n"
+                f"Correo: {txt_email.value}\n"
+                f"Carrera: {dd_carrera.value}\n"
+                f"Semestre: {dd_semestre.value}\n"
+                f"Genero: {row_genero.value}"
+            )
+            welcome_dlg.open=True
+            welcome_dlg.title = ft.Text(resultado)
+            # Limpiamos los campos después de registrar
+            txt_nombre.value = ""
+            txt_email.value = ""
+            txt_control.value = ""
+            dd_carrera.value = None
+            dd_semestre.value = None
+            row_genero.value = None
+        
+        page.update() 
+
+    # --- CONTROLES DE ENTRADA (Subtema 1.4) ---
+    txt_nombre = ft.TextField(label="Nombre", border_color="#4D2A32",expand=True)
+    txt_control = ft.TextField(label="Numero de control", border_color="#4D2A32", expand=True)
+    txt_email = ft.TextField(label="Email", border_color="#4D2A32")
+
+    seccion_display = ft.Container(
+        content=ft.Text("", size = 20),
+        bgcolor=ft.Colors.BLACK12,
+        alignment=ft.alignment.Alignment(0, 0),
+        border=ft.border.all(1, ft.Colors.RED),
+        expand=True
+    )
+
+    dd_carrera = ft.Dropdown(
+        label="Carrera",
+        expand=True,
+        border_color="#4D2A32",
+        options=[
+            ft.dropdown.Option("Ingeniería en Sistemas"),
+            ft.dropdown.Option("Ingeniería Civil"),
+            ft.dropdown.Option("Ingeniería Industrial"),
+            ft.dropdown.Option("Ingeniería Gestion Empresarial"),
+            ft.dropdown.Option("Ingeniería Electronica"),
+        ]
+    )
+
+    dd_semestre = ft.Dropdown(
+        label="Semestre",
+        expand=True,
+        border_color="#4D2A32",
+        options=[ft.dropdown.Option(str(i)) for i in range(1, 9)]
+    )
+    
+    # Campos que se integrarán como Dropdowns posteriormente
+    txt_carrera = ft.TextField(label="Carrera", expand=True, border_color="#4D2A32")
+    txt_semestre = ft.TextField(label="Semestre", expand=True, border_color="#4D2A32")
+
+    # Botón Enviar adaptado a versión 0.80.6.dev (usando content)
+    btn_enviar = ft.ElevatedButton(
+        content=ft.Text("Enviar", color="black", size=16),
+        bgcolor=ft.Colors.GREY_500,
+        width=page.width, # Ocupa el ancho disponible
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=0),
+        ),
+        on_click=registrar_datos
+    )
+
+    # --- CONSTRUCCIÓN DE LA INTERFAZ (Subtema 1.1) ---
+    page.add(
+        ft.Column([
+            txt_nombre,
+            txt_control,
+            txt_email,
+            # Fila para Carrera y Semestre
+            ft.Row([
+                dd_carrera,
+                dd_semestre
+            ], spacing=10),
+            # Espacio para el Genero
+            row_genero,
+            # Botón final
+            btn_enviar,
+            #seccion_display
+        ], spacing=15)
+    )
+
+
+
+# Ejecución específica para visualización en Navegador
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+```
+
+
 
 
 
