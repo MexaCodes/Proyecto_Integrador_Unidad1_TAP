@@ -321,11 +321,11 @@ page.add(
 if __name__ == "__main__":
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 ```
-#RESULTADOS
+# RESULTADOS
 <img width="1572" height="882" alt="Screenshot 2026-02-26 190951" src="https://github.com/user-attachments/assets/50e138db-8967-48ef-a650-d5c4df90384d" />
 <img width="1574" height="880" alt="Screenshot 2026-02-26 191106" src="https://github.com/user-attachments/assets/958d0e37-7016-4f61-92d3-a10f2bf450ab" />
 
-#ERRORES
+# ERRORES
 <img width="1575" height="877" alt="Screenshot 2026-02-26 191042" src="https://github.com/user-attachments/assets/5ab5af00-9fff-451b-a695-9bb64d6fad4e" />
 <img width="1586" height="889" alt="Screenshot 2026-02-26 191010" src="https://github.com/user-attachments/assets/b0642368-6127-4ec7-8801-ccb0c3674d0d" />
 <img width="1566" height="883" alt="Screenshot 2026-02-26 191127" src="https://github.com/user-attachments/assets/a832a51b-7a97-4fc5-974e-b23b54fa197d" />
@@ -335,7 +335,7 @@ if __name__ == "__main__":
 <img width="1569" height="869" alt="Screenshot 2026-02-26 191251" src="https://github.com/user-attachments/assets/b0f7be6f-57d6-4fb9-b613-33f4aa98ffd0" />
 
 
-#CODIGO COMPLETO
+# CODIGO COMPLETO
 ```python
 import re
 import flet as ft
